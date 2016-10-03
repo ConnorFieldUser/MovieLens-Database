@@ -5,10 +5,10 @@ import csv
 connection = psycopg2.connect("dbname=movielens user=movielens")
 cursor = connection.cursor()
 
-cursor.execute("DROP TABLE IF EXISTS user_table;")
+cursor.execute("DROP TABLE IF EXISTS item_table;")
 
 create_table_command = """
-CREATE TABLE user_table (
+CREATE TABLE item_table (
   ID serial PRIMARY KEY,
   TITLE VARCHAR(100),
   RELEASE_DATE VARCHAR(11),
@@ -46,7 +46,7 @@ with open('item.csv', encoding='latin1') as item:
                                                                 "HORROR", "MUSICAL", "MYSTERY", "ROMANCE",
                                                                 "SCI_FI", "THRILLER", "WAR", "WESTERN"]))
     for row in item:
-        cursor.execute("""INSERT INTO user_table VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+        cursor.execute("""INSERT INTO item_table VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
                                                           %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
                        (row["ID"], row["TITLE"], row["RELEASE_DATE"], row["VID_RELEASE"], row["IMDB_URL"],
                         row["UNKNOWN"], row["ACTION"], row["ADVENTURE"], row["ANIMATION"], row["CHILDRENS"],
@@ -55,15 +55,55 @@ with open('item.csv', encoding='latin1') as item:
                         row["THRILLER"], row["WAR"], row["WESTERN"]))
 connection.commit()
 
+# USER_TABLE START HERE
+
+cursor.execute("DROP TABLE IF EXISTS user_table;")
+
+create_table_command = """
+CREATE TABLE user_table (
+  USER_ID serial PRIMARY KEY,
+  AGE NUMERIC(3),
+  GENDER VARCHAR(1),
+  OCCUPATION VARCHAR (20),
+  ZIP_CODE VARCHAR(6)
+);
+"""
+
+cursor.execute(create_table_command)
+
+# delimiter='|'
+with open('user.csv', encoding='latin1') as user:
+    user = list(csv.DictReader(user, delimiter='|', fieldnames=["USER_ID", "AGE", "GENDER", "OCCUPATION", "ZIP_CODE"]))
+    for row in user:
+        cursor.execute("INSERT INTO user_table VALUES (%s, %s, %s, %s, %s)",
+                       (row["USER_ID"], row["AGE"], row["GENDER"], row["OCCUPATION"], row["ZIP_CODE"]))
+connection.commit()
+
+########################## DATA_TABLE START HERE ##############################
+#
+# cursor.execute("DROP TABLE IF EXISTS data_table;")
+#
+# create_table_command = """
+# CREATE TABLE data_table (
+#   USER_ID serial PRIMARY KEY,
+#   AGE NUMERIC(3),
+#   GENDER VARCHAR(1),
+#   OCCUPATION(20),
+#   ZIP_CODE VARCHAR(6)
+# );
+# """
+#
+# cursor.execute(create_table_command)
+#
+# # delimiter='|'
+# with open('item.csv', encoding='latin1') as user:
+#     user = list(csv.DictReader(user, delimiter='|', fieldnames=["USER_ID", "AGE", "GENDER", "OCCUPATION""ZIP_CODE"]))
+#     for row in item:
+#         cursor.execute("""INSERT INTO user_table VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+#                                                           %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+#                        (row["USER_ID"], row["AGE"], row["GENDER"], row["OCCUPATION"], row["ZIP_CODE"]))
+# connection.commit()
+
 
 cursor.close()
 connection.close()
-
-# CREATE TABLE public.user_table (
-#   id INTEGER PRIMARY KEY NOT NULL DEFAULT nextval('user_table_id_seq'::regclass),
-#   age INTEGER,
-#   gender CHARACTER VARYING(6),
-#   occupation CHARACTER VARYING(40),
-#   "zip code" INTEGER
-# );
-# CREATE UNIQUE INDEX user_table_id_uindex ON user_table USING BTREE (id);
