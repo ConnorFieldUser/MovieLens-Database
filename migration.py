@@ -94,13 +94,6 @@ CREATE TABLE data_table (
 );
 """
 
-# CREATE TABLE ORDERS (
-#        ID          INT        NOT NULL,
-#        DATE        DATETIME,
-#        CUSTOMER_ID INT references CUSTOMERS(ID),
-#        AMOUNT     double,
-#        PRIMARY KEY (ID)
-# );
 
 cursor.execute(create_table_command)
 
