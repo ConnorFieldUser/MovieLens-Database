@@ -9,7 +9,7 @@ cursor.execute("DROP TABLE IF EXISTS item_table;")
 
 create_table_command = """
 CREATE TABLE item_table (
-  MOVIE_ID serial PRIMARY KEY NOT NULL,
+  MOVIE_ID serial PRIMARY KEY,
   TITLE VARCHAR(100),
   RELEASE_DATE VARCHAR(11),
   VID_RELEASE VARCHAR(100),
@@ -35,7 +35,7 @@ CREATE TABLE item_table (
   WESTERN NUMERIC(1)
 );
 
-CREATE UNIQUE INDEX item_table_MOVIE_ID_id_unidex ON public.item_table (MOVIE_ID);
+
 """
 
 cursor.execute(create_table_command)
@@ -62,14 +62,13 @@ connection.commit()
 cursor.execute("DROP TABLE IF EXISTS user_table;")
 
 create_table_command = """
-CREATE TABLE public.user_table (
-  USER_ID serial PRIMARY KEY NOT NULL,
+CREATE TABLE user_table (
+  USER_ID serial PRIMARY KEY,
   AGE NUMERIC(3),
   GENDER VARCHAR(1),
   OCCUPATION VARCHAR (20),
   ZIP_CODE VARCHAR(6)
 );
-CREATE UNIQUE INDEX user_table_USER_ID_id_unidex ON public.user_table (USER_ID);
 """
 
 cursor.execute(create_table_command)
@@ -87,15 +86,21 @@ connection.commit()
 cursor.execute("DROP TABLE IF EXISTS data_table;")
 
 create_table_command = """
-CREATE TABLE public.data_table (
-  USER_ID INT,
-  ITEM_ID INT,
-  RATING VARCHAR(1),
+CREATE TABLE data_table (
+  USER_ID INT references user_table(USER_ID),
+  ITEM_ID INT references item_table(MOVIE_ID),
+  RATING INT,
   TIMESTAMP NUMERIC(9)
-  CONSTRAINT data_table_item_table_MOVIE_ID_fk FOREIGN KEY (ITEM_ID) REFERENCES item_table (MOVIE ID),
-  CONSTRAINT data_table_user_table_USER_ID_fk FOREIGN KEY (USER_ID) REFERENCES item_table (USER_ID)
 );
 """
+
+# CREATE TABLE ORDERS (
+#        ID          INT        NOT NULL,
+#        DATE        DATETIME,
+#        CUSTOMER_ID INT references CUSTOMERS(ID),
+#        AMOUNT     double,
+#        PRIMARY KEY (ID)
+# );
 
 cursor.execute(create_table_command)
 
